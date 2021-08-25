@@ -1,0 +1,95 @@
+$breakpoints: (
+	mb: 468px,	// Mobile 		- 100px down
+	xs: 568px, 	// Extra Small 	- iPhone5 Horizontal
+	sm: 768px, 	// Small 		- Common legacy screen size
+	md: 1024px,	// Medium 		- Common legacy screen size +256
+	lg: 1280px, // Large 		- +256
+	xl: 1536px, // Extra Large 	- +256
+	ml: 1792px, // Mega Large 	- +256
+	de: 1920px, // Desktop 		- +128
+);
+
+$max-columns: 12;
+
+:root {
+	--columns: #{$max-columns};
+	--gap: 20px;
+}
+
+body, html, p {
+	margin: 0;
+	padding: 0;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+.container {
+	width: 100%;
+	margin-right: auto;
+	margin-left: auto;
+	padding-right: var(--gap);
+	padding-left: var(--gap);
+	background: rgba(255, 0, 0, 0.5);
+
+	@each $size, $width in $breakpoints {
+		@media(min-width: $width) {
+			max-width: $width;
+		}
+	}
+}
+
+.row {
+	position: relative;
+	display: flex;
+	flex-wrap: wrap;
+	margin-right: calc(var(--gap) * -1);
+	margin-left: calc(var(--gap) * -1);
+	background: cyan;
+
+	&:before,
+	&:after {
+		content: '';
+		position: absolute;
+		width: var(--gap);
+		height: 100%;
+		background-color: rgba(magenta, .5);
+	}
+
+	&:before {
+		left: 0;
+	}
+
+	&:after {
+		right: 0;
+	}
+}
+
+%col {
+	flex-basis: calc(100% / var(--columns));
+	flex-grow: 1;
+	max-width: 100%;
+	padding-right: var(--gap);
+	padding-left: var(--gap);
+	background: yellow;
+
+	@for $i from 1 through $max-columns {
+		&[class~="col-#{$i}"]{
+			flex-basis: calc(100% / var(--columns) * #{$i});
+			max-width: calc(100% / var(--columns) * #{$i});
+		}
+	}
+
+	@for $i from 0 through $max-columns {
+		&[class~="offset-#{$i}"]{
+			margin-left: calc(100% / var(--columns) * #{$i});
+		}
+	}
+}
+
+.col,
+[class*="col-"] {
+	@extend %col;
+}
+

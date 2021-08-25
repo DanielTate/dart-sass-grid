@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@oxidental/ox": "^0.0.6",
+    "@oxidental/ox-task-scss": "^0.0.8"
+  },
+  "scripts": {
+    "watch": "node ./tasks/index.js"
+  }
+}
