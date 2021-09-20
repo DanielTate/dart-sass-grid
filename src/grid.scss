@@ -31,11 +31,19 @@ body, html, p {
 	margin-left: auto;
 	padding-right: var(--gap);
 	padding-left: var(--gap);
-	background: rgba(255, 0, 0, 0.5);
 
-	@each $size, $width in $breakpoints {
-		@media(min-width: $width) {
-			max-width: $width;
+	// This implementation snaps to the lower breakpoint on the current breakpoint
+	@for $i from 2 through length($breakpoints) {
+		$point: nth($breakpoints, $i);
+		$key: nth($point, 1);
+		$value: nth($point, 2);
+
+		$pointDown: nth($breakpoints, $i - 1);
+		$keyDown: nth($pointDown, 1);
+		$valueDown: nth($pointDown, 2);
+
+		@media(min-width: $value) {
+			max-width: $valueDown;
 		}
 	}
 }
@@ -46,24 +54,6 @@ body, html, p {
 	flex-wrap: wrap;
 	margin-right: calc(var(--gap) * -1);
 	margin-left: calc(var(--gap) * -1);
-	background: cyan;
-
-	&:before,
-	&:after {
-		content: '';
-		position: absolute;
-		width: var(--gap);
-		height: 100%;
-		background-color: rgba(magenta, .5);
-	}
-
-	&:before {
-		left: 0;
-	}
-
-	&:after {
-		right: 0;
-	}
 }
 
 %col {
@@ -72,7 +62,6 @@ body, html, p {
 	max-width: 100%;
 	padding-right: var(--gap);
 	padding-left: var(--gap);
-	background: yellow;
 
 	@for $i from 1 through $max-columns {
 		&[class~="col-#{$i}"]{
@@ -86,10 +75,31 @@ body, html, p {
 			margin-left: calc(100% / var(--columns) * #{$i});
 		}
 	}
+
+	@each $size, $width in $breakpoints {
+		@media ( min-width: $size ) {
+			@for $i from 1 through $max-columns {
+				&[class~='#{$size}:col-#{$i}'] {
+					flex-basis: calc(100% / var(--columns) * #{$i});
+					max-width: calc(100% / var(--columns) * #{$i});
+				}
+			}
+		}
+
+		@media (min-width: $size ) {
+			@for $i from 0 through $max-columns {
+				&[class~='#{$size}:offset-#{$i}'] {
+					margin-left: calc(100% / var(--columns) * #{$i});
+					&:only-child {
+						margin-left: calc(100% / var(--columns) * #{$i} + var(--gap));
+					}
+				}
+			}
+		}
+	}
 }
 
 .col,
 [class*="col-"] {
 	@extend %col;
 }
-
